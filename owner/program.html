@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Setting Program - Offense Coffee</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/main.css">
+    <style>
+        body { padding-bottom: 80px; }
+        .container { padding: 20px; max-width: 480px; margin: 0 auto; }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--card-bg); border-top: 1px solid var(--border-color); display: flex; justify-content: space-around; padding: 10px 0; z-index: 100; }
+        .nav-item { text-align: center; color: var(--text-muted); font-size: 12px; cursor: pointer; text-decoration: none; }
+        .nav-item.active { color: var(--accent-red); font-weight: bold; }
+        .nav-item span { display: block; font-size: 20px; margin-bottom: 4px; }
+    </style>
+</head>
+<body>
+    <!-- Navbar Atas -->
+    <nav class="navbar">
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <button class="hamburger" onclick="toggleSidebar()">☰</button>
+            <div class="navbar-brand">Owner <span>Panel</span></div>
+        </div>
+        <button class="btn btn-secondary" onclick="logout()" style="width:auto; padding: 8px 12px; font-size:12px;">Logout</button>
+    </nav>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+    <!-- Sidebar Drawer -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-profile">
+            <div class="sidebar-avatar" id="sidebarAvatar">O</div>
+            <div>
+                <div class="sidebar-name" id="sidebarName">Owner</div>
+                <div class="sidebar-role">Administrator</div>
+            </div>
+        </div>
+        
+        <ul class="sidebar-menu">
+            <li><a href="dashboard.html" class="nav-link"><span>📊</span> Dashboard</a></li>
+            <li><a href="kasir.html" class="nav-link"><span>🛒</span> Kasir (POS)</a></li>
+            <li><a href="scan.html" class="nav-link"><span>📷</span> Scan QR Member</a></li>
+            <li><a href="menu.html" class="nav-link"><span>☕</span> Antrean Menu</a></li>
+            <li><a href="laporan.html" class="nav-link"><span>📈</span> Laporan Penjualan</a></li>
+            <li><a href="voucher.html" class="nav-link"><span>🎁</span> Klaim Voucher</a></li>
+            <li><a href="bahan.html" class="nav-link"><span>📦</span> Bahan Baku</a></li>
+            <li><a href="resep.html" class="nav-link"><span>📝</span> Resep & HPP</a></li>
+            <li><a href="kelola-menu.html" class="nav-link"><span>⚙️</span> Kelola Master Menu</a></li>
+            <li><a href="program.html" class="nav-link"><span>🏆</span> Program Loyalty</a></li>
+        </ul>
+
+        <div class="sidebar-footer">
+            <a href="#" onclick="logout()" style="color: var(--accent-red); display: flex; gap: 10px; align-items: center; padding: 10px; text-decoration: none;">
+                <span>🚪</span> Logout
+            </a>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2 class="text-center" style="margin-bottom: 20px;">Setting Program</h2>
+                <div class="card" style="margin-bottom: 20px;">
+            <button class="btn btn-primary btn-block" onclick="createNewProgram()">+ Buat Program Baru (Periode Baru)</button>
+        </div>
+        
+        <div class="card">
+            <form id="programForm" onsubmit="saveProgram(event)">
+                <div class="form-group">
+                    <label class="form-label">Nama Program</label>
+                    <input type="text" id="progName" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Target Stempel</label>
+                    <input type="number" id="progTarget" class="form-control" required min="1">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Durasi Program (Bulan)</label>
+                    <input type="number" id="progDuration" class="form-control" required min="1" placeholder="Contoh: 3">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Hadiah Utama (Target Akhir)</label>
+                    <input type="text" id="progReward" class="form-control" required placeholder="Contoh: Free Coffee">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Warna Banner</label>
+                    <select id="progColor" class="form-control">
+                        <option value="#e50914">Merah (Offense Red)</option>
+                        <option value="#ff9800">Orange</option>
+                        <option value="#4caf50">Hijau</option>
+                        <option value="#2196f3">Biru</option>
+                        <option value="#9c27b0">Ungu</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Masa Berlaku Voucher (Hari)</label>
+                    <input type="number" id="progExpiry" class="form-control" required min="1">
+                </div>
+
+                <!-- TAMBAHAN MILESTONE -->
+                <div style="border-top: 1px solid var(--border-color); margin: 20px 0; padding-top: 15px;">
+                    <label class="form-label">Hadiah Milestone (Opsional)</label>
+                    <div style="display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
+                        <input type="number" id="milestoneStamp" class="form-control" placeholder="Stempel ke-" style="width: 30%;">
+                        <input type="text" id="milestoneReward" class="form-control" placeholder="Hadiah" style="width: 40%;">
+                        <input type="color" id="milestoneColor" class="form-control" value="#ff9800" style="width: 20%; padding: 2px; cursor: pointer;" title="Pilih Warna Bingkai">
+                    </div>
+                    <button type="button" class="btn btn-secondary" onclick="addMilestone()" style="margin-bottom: 10px;">+ Tambah Milestone</button>
+                    <div id="milestoneList" style="font-size: 12px; color: var(--text-muted);"></div>
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-block" style="margin-top: 20px;">Simpan Program</button>
+                <button type="button" class="btn btn-danger btn-block" style="margin-top: 10px;" onclick="archiveProgram()">📦 Arsipkan Program (Ganti Periode)</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/config/supabase.js"></script>
+    <script src="../js/core/auth.js"></script>
+    <script src="../js/pages/owner/program.page.js"></script>
+    <script src="../js/core/ui.js"></script>
+        <script>
+        // Logika Sidebar
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('sidebarOverlay').classList.toggle('active');
+        }
+
+        // Tandai menu yang aktif
+        document.addEventListener('DOMContentLoaded', () => {
+            const currentPage = window.location.pathname.split('/').pop();
+            document.querySelectorAll('.sidebar-menu a').forEach(link => {
+                if (link.getAttribute('href') === currentPage) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resep Menu - Offense Coffee</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/main.css">
+</head>
+<body>
+    <!-- Navbar Atas -->
+    <nav class="navbar">
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <button class="hamburger" onclick="toggleSidebar()">☰</button>
+            <div class="navbar-brand">Owner <span>Panel</span></div>
+        </div>
+        <button class="btn btn-secondary" onclick="logout()" style="width:auto; padding: 8px 12px; font-size:12px;">Logout</button>
+    </nav>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+    <!-- Sidebar Drawer -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-profile">
+            <div class="sidebar-avatar" id="sidebarAvatar">O</div>
+            <div>
+                <div class="sidebar-name" id="sidebarName">Owner</div>
+                <div class="sidebar-role">Administrator</div>
+            </div>
+        </div>
+        
+        <ul class="sidebar-menu">
+            <li><a href="dashboard.html" class="nav-link"><span>📊</span> Dashboard</a></li>
+            <li><a href="kasir.html" class="nav-link"><span>🛒</span> Kasir (POS)</a></li>
+            <li><a href="scan.html" class="nav-link"><span>📷</span> Scan QR Member</a></li>
+            <li><a href="menu.html" class="nav-link"><span>☕</span> Antrean Menu</a></li>
+            <li><a href="laporan.html" class="nav-link"><span>📈</span> Laporan Penjualan</a></li>
+            <li><a href="voucher.html" class="nav-link"><span>🎁</span> Klaim Voucher</a></li>
+            <li><a href="bahan.html" class="nav-link"><span>📦</span> Bahan Baku</a></li>
+            <li><a href="resep.html" class="nav-link"><span>📝</span> Resep & HPP</a></li>
+            <li><a href="kelola-menu.html" class="nav-link"><span>⚙️</span> Kelola Master Menu</a></li>
+            <li><a href="program.html" class="nav-link"><span>🏆</span> Program Loyalty</a></li>
+        </ul>
+
+        <div class="sidebar-footer">
+            <a href="#" onclick="logout()" style="color: var(--accent-red); display: flex; gap: 10px; align-items: center; padding: 10px; text-decoration: none;">
+                <span>🚪</span> Logout
+            </a>
+        </div>
+    </div>
+
+    <div class="container" style="padding: 20px; max-width: 480px; margin: 0 auto;">
+        <h2 style="margin-bottom: 20px;">Resep & HPP</h2>
+        
+        <div class="card" style="margin-bottom: 20px;">
+            <h3 style="margin-bottom: 10px; font-size: 16px;">Buat Resep</h3>
+            <div class="form-group">
+                <label>Pilih Menu</label>
+                <select id="resepMenu" class="form-control"></select>
+            </div>
+            <div class="form-group">
+                <label>Pilih Bahan</label>
+                <select id="resepBahan" class="form-control"></select>
+            </div>
+            <div class="form-group">
+                <label>Takaran</label>
+                <input type="number" id="resepTakaran" class="form-control" placeholder="misal: 18">
+            </div>
+            <button class="btn btn-primary btn-block" onclick="addResep()">Tambah ke Resep</button>
+        </div>
+
+        <div class="card">
+            <h3 style="margin-bottom: 10px; font-size: 16px;">Daftar Resep</h3>
+            <div id="resepList">Loading...</div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/config/supabase.js"></script>
+    <script src="../js/core/auth.js"></script>
+    <script src="../js/core/ui.js"></script>
+    <script src="../js/pages/owner/resep.page.js"></script>
+        <script>
+        // Logika Sidebar
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('sidebarOverlay').classList.toggle('active');
+        }
+
+        // Tandai menu yang aktif
+        document.addEventListener('DOMContentLoaded', () => {
+            const currentPage = window.location.pathname.split('/').pop();
+            document.querySelectorAll('.sidebar-menu a').forEach(link => {
+                if (link.getAttribute('href') === currentPage) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

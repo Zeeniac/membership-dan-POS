@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scan QR - Offense Coffee</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/main.css">
+    <style>
+        body { padding-bottom: 80px; }
+        .container { padding: 20px; max-width: 480px; margin: 0 auto; }
+        
+        /* Styling Box Kamera */
+        #reader { 
+            width: 100%; 
+            border-radius: var(--radius-lg); 
+            overflow: hidden; 
+            border: 2px solid var(--border-color);
+            background: var(--card-bg);
+        }
+
+        /* Nge-styling Tombol & Tulisan Bawaan Library */
+        #reader button {
+            background-color: var(--accent-red) !important;
+            color: white !important;
+            border: none !important;
+            padding: 10px 20px !important;
+            border-radius: var(--radius-sm) !important;
+            font-weight: 600 !important;
+            cursor: pointer !important;
+            margin-top: 10px !important;
+            transition: 0.3s !important;
+        }
+        #reader button:hover {
+            background-color: var(--accent-dark-red) !important;
+        }
+        #reader__dashboard_section_csr span {
+            color: var(--text-muted) !important;
+            font-size: 14px !important;
+        }
+        #reader__dashboard_section_csr a {
+            color: var(--accent-red) !important;
+            text-decoration: underline !important;
+            margin-top: 10px !important;
+            display: inline-block !important;
+        }
+
+        /* Card Hasil Scan */
+        .result-card { display: none; margin-top: 20px; animation: popIn 0.3s ease; }
+        .result-card.active { display: block; }
+        .success-icon { font-size: 50px; text-align: center; margin-bottom: 10px; }
+        
+        /* Bottom Nav */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--card-bg); border-top: 1px solid var(--border-color); display: flex; justify-content: space-around; padding: 10px 0; z-index: 100; }
+        .nav-item { text-align: center; color: var(--text-muted); font-size: 12px; cursor: pointer; text-decoration: none; }
+        .nav-item.active { color: var(--accent-red); font-weight: bold; }
+        .nav-item span { display: block; font-size: 20px; margin-bottom: 4px; }
+
+                /* Benerin posisi ikon kamera bawaan library */
+        #reader img[alt="Info icon"] {
+            display: none !important;
+        }
+        
+        /* Trik paksa semua gambar di dalam reader biar ke tengah */
+        #reader img {
+            display: block !important;
+            margin: 0 auto 15px auto !important;
+            float: none !important;       /* Ini kunci biar ga nempel pinggir */
+            position: static !important;  /* Mematikan posisi absolute bawaan */
+            width: 80px !important;
+            height: auto !important;
+            opacity: 0.5 !important;
+        }
+    </style>
+<body>
+    <nav class="navbar">
+        <div class="navbar-brand">Owner <span>Panel</span></div>
+        <button class="btn btn-secondary" onclick="logout()" style="width:auto; padding: 8px 12px; font-size:12px;">Logout</button>
+    </nav>
+
+    <div class="container">
+        <h2 class="text-center" style="margin-bottom: 20px;">Scan QR Pelanggan</h2>
+        <div id="reader"></div>
+
+        <div class="card result-card" id="resultCard">
+            <div class="success-icon" id="resultIcon">✅</div>
+            <h3 class="text-center" id="resultTitle">Check-in Berhasil!</h3>
+            <p class="text-center font-muted" id="resultMessage">Pelanggan mendapat 1 stempel.</p>
+            
+            <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: var(--radius-sm); margin-bottom: 15px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                    <span class="font-muted">Nama</span><span id="resName" class="font-bold">-</span>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                    <span class="font-muted">Stempel Saat Ini</span><span id="resStamps" class="font-bold text-red">-</span>
+                </div>
+            </div>
+
+            <div id="orderSection" style="display:none; border-top: 1px solid var(--border-color); padding-top: 15px; margin-top: 15px;">
+                <h4 style="margin-bottom: 10px; font-size: 14px;">Tambah Pesanan</h4>
+                <div class="form-group">
+                    <select id="menuSelect" class="form-control"><option value="">-- Pilih Menu --</option></select>
+                </div>
+                <button class="btn btn-primary" onclick="saveOrder()">Tambahkan ke Struk</button>
+            </div>
+            <button class="btn btn-secondary btn-block" onclick="resetScanner()" style="margin-top: 15px;">Scan Lagi</button>
+        </div>
+    </div>
+
+    <div class="bottom-nav">
+        <a href="dashboard.html" class="nav-item"><span>📊</span>Dashboard</a>
+        <a href="scan.html" class="nav-item active"><span>📷</span>Scan</a>
+        <a href="menu.html" class="nav-item"><span>☕</span>Menu</a>
+        <a href="voucher.html" class="nav-item"><span>🎁</span>Voucher</a>
+        <a href="program.html" class="nav-item"><span>⚙️</span>Program</a>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <script src="../js/config/supabase.js"></script>
+    <script src="../js/core/auth.js"></script>
+    <script src="../js/pages/owner/scan.page.js"></script>
+</body>
+</html>

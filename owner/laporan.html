@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laporan Penjualan - Offense Coffee</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/main.css">
+    <style>
+        body { padding-bottom: 80px; }
+        .container { padding: 20px; max-width: 480px; margin: 0 auto; }
+        
+        .filter-tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+        .filter-tab { flex: 1; text-align: center; padding: 10px; border-radius: var(--radius-sm); background: var(--card-bg); color: var(--text-muted); cursor: pointer; font-weight: 600; font-size: 13px; border: 1px solid var(--border-color); }
+        .filter-tab.active { background: var(--accent-red); color: white; border-color: var(--accent-red); }
+
+        .report-card { background: var(--card-bg); padding: 20px; border-radius: var(--radius-md); border: 1px solid var(--border-color); margin-bottom: 20px; text-align: center; }
+        .report-total { font-size: 32px; font-weight: 800; color: var(--accent-red); margin-bottom: 5px; }
+        .report-label { font-size: 14px; color: var(--text-muted); }
+
+        .best-seller-list { margin-top: 15px; }
+        .best-seller-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px dashed var(--border-color); }
+        
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--card-bg); border-top: 1px solid var(--border-color); display: flex; justify-content: space-around; padding: 10px 0; z-index: 100; }
+        .nav-item { text-align: center; color: var(--text-muted); font-size: 11px; cursor: pointer; text-decoration: none; }
+        .nav-item.active { color: var(--accent-red); font-weight: bold; }
+        .nav-item span { display: block; font-size: 20px; margin-bottom: 4px; }
+    </style>
+</head>
+<body>
+    <!-- Navbar Atas -->
+    <nav class="navbar">
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <button class="hamburger" onclick="toggleSidebar()">☰</button>
+            <div class="navbar-brand">Owner <span>Panel</span></div>
+        </div>
+        <button class="btn btn-secondary" onclick="logout()" style="width:auto; padding: 8px 12px; font-size:12px;">Logout</button>
+    </nav>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+    <!-- Sidebar Drawer -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-profile">
+            <div class="sidebar-avatar" id="sidebarAvatar">O</div>
+            <div>
+                <div class="sidebar-name" id="sidebarName">Owner</div>
+                <div class="sidebar-role">Administrator</div>
+            </div>
+        </div>
+        
+        <ul class="sidebar-menu">
+            <li><a href="dashboard.html" class="nav-link"><span>📊</span> Dashboard</a></li>
+            <li><a href="kasir.html" class="nav-link"><span>🛒</span> Kasir (POS)</a></li>
+            <li><a href="scan.html" class="nav-link"><span>📷</span> Scan QR Member</a></li>
+            <li><a href="menu.html" class="nav-link"><span>☕</span> Antrean Menu</a></li>
+            <li><a href="laporan.html" class="nav-link"><span>📈</span> Laporan Penjualan</a></li>
+            <li><a href="voucher.html" class="nav-link"><span>🎁</span> Klaim Voucher</a></li>
+            <li><a href="bahan.html" class="nav-link"><span>📦</span> Bahan Baku</a></li>
+            <li><a href="resep.html" class="nav-link"><span>📝</span> Resep & HPP</a></li>
+            <li><a href="kelola-menu.html" class="nav-link"><span>⚙️</span> Kelola Master Menu</a></li>
+            <li><a href="program.html" class="nav-link"><span>🏆</span> Program Loyalty</a></li>
+        </ul>
+
+        <div class="sidebar-footer">
+            <a href="#" onclick="logout()" style="color: var(--accent-red); display: flex; gap: 10px; align-items: center; padding: 10px; text-decoration: none;">
+                <span>🚪</span> Logout
+            </a>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2 style="margin-bottom: 20px;">Laporan Penjualan</h2>
+        
+        <!-- Filter Harian / Mingguan / Bulanan -->
+        <div class="filter-tabs">
+            <div class="filter-tab active" id="tabHarian" onclick="loadReport('harian')">Hari Ini</div>
+            <div class="filter-tab" id="tabMingguan" onclick="loadReport('mingguan')">Minggu Ini</div>
+            <div class="filter-tab" id="tabBulanan" onclick="loadReport('bulanan')">Bulan Ini</div>
+        </div>
+
+        <!-- Total Pendapatan -->
+        <div class="report-card">
+            <div class="report-label">Total Pendapatan</div>
+            <div class="report-total" id="totalPendapatan">Rp 0</div>
+            <div class="report-label" id="totalTransaksi">0 Transaksi</div>
+        </div>
+
+        <!-- Menu Terlaris -->
+        <div class="card">
+            <h3 style="margin-bottom: 10px; font-size: 16px;">🔥 Menu Terlaris</h3>
+            <div class="best-seller-list" id="bestSellerList">
+                <p class="font-muted">Memuat data...</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/config/supabase.js"></script>
+    <script src="../js/core/auth.js"></script>
+    <script src="../js/core/ui.js"></script>
+    <script src="../js/pages/owner/laporan.page.js"></script>
+        <script>
+        // Logika Sidebar
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('sidebarOverlay').classList.toggle('active');
+        }
+
+        // Tandai menu yang aktif
+        document.addEventListener('DOMContentLoaded', () => {
+            const currentPage = window.location.pathname.split('/').pop();
+            document.querySelectorAll('.sidebar-menu a').forEach(link => {
+                if (link.getAttribute('href') === currentPage) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

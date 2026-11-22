@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voucher Saya - Offense Coffee</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/main.css">
+    <style>
+        body { padding-bottom: 80px; }
+        .container { padding: 20px; max-width: 480px; margin: 0 auto; }
+        
+        .voucher-card {
+            background: var(--card-bg);
+            border-radius: var(--radius-md);
+            display: flex;
+            margin-bottom: 20px;
+            position: relative;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        /* Efek Kupon */
+        .voucher-card::before, .voucher-card::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 20px; height: 20px;
+            background: var(--bg-color); /* Warna background body */
+            border-radius: 50%;
+            transform: translateY(-50%);
+        }
+        .voucher-card::before { left: -10px; border-right: 1px solid var(--border-color); }
+        .voucher-card::after { right: -10px; border-left: 1px solid var(--border-color); }
+
+        .voucher-left {
+            background: var(--accent-red);
+            color: white;
+            padding: 20px;
+            border-radius: var(--radius-md) 0 0 var(--radius-md);
+            width: 35%;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            text-align: center;
+        }
+        .voucher-left h3 { font-size: 20px; margin: 0; line-height: 1.1; }
+        .voucher-left span { font-size: 10px; opacity: 0.8; margin-bottom: 5px; }
+
+        .voucher-right {
+            padding: 20px;
+            flex: 1;
+            border-left: 2px dashed var(--border-color);
+            display: flex; flex-direction: column; justify-content: center;
+        }
+        .voucher-right h4 { font-size: 16px; margin-bottom: 5px; text-transform: capitalize; }
+        .voucher-right p { font-size: 11px; color: var(--text-muted); margin: 0; }
+        
+        .voucher-code {
+            margin-top: 10px; background: rgba(255,255,255,0.1);
+            padding: 4px 8px; border-radius: 4px; font-family: monospace;
+            font-weight: bold; display: inline-block; font-size: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        /* Efek Kalau Udah Diklaim */
+        .voucher-card.redeemed { opacity: 0.4; filter: grayscale(100%); }
+        .voucher-card.redeemed .voucher-left { background: #333; }
+
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--card-bg); border-top: 1px solid var(--border-color); display: flex; justify-content: space-around; padding: 10px 0; z-index: 100; }
+        .nav-item { text-align: center; color: var(--text-muted); font-size: 11px; cursor: pointer; text-decoration: none; }
+        .nav-item.active { color: var(--accent-red); font-weight: bold; }
+        .nav-item span { display: block; font-size: 20px; margin-bottom: 4px; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-brand">Offense <span>Coffee</span></div>
+        <button class="btn btn-secondary" onclick="logout()" style="width:auto; padding: 8px 12px; font-size:12px;">Logout</button>
+    </nav>
+
+    <div class="container">
+        <h2 style="margin-bottom: 20px;">Voucher Saya</h2>
+        <div id="voucherList">
+            <p class="font-muted">Memuat voucher...</p>
+        </div>
+    </div>
+
+    <div class="bottom-nav">
+        <a href="dashboard.html" class="nav-item"><span>🏠</span>Beranda</a>
+        <a href="voucher.html" class="nav-item active"><span>🎟️</span>Voucher</a>
+        <a href="riwayat.html" class="nav-item"><span>🧾</span>Riwayat</a>
+        <a href="leaderboard.html" class="nav-item"><span>🏆</span>Peringkat</a>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/config/supabase.js"></script>
+    <script src="../js/core/auth.js"></script>
+    <script src="../js/pages/customer/voucher.page.js"></script>
+    <script src="../js/core/ui.js"></script>
+</body>
+</html>

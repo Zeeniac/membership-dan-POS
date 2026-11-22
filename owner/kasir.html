@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kasir POS - Offense Coffee</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/main.css">
+    <style>
+        body { background: var(--bg-color); height: 100vh; overflow: hidden; margin: 0; padding: 0; }
+        
+        /* Layout 2 Kolom */
+        .pos-layout { display: flex; height: 100vh; width: 100vw; }
+        
+        /* KIRI: Area Menu */
+        .pos-menu-area { flex: 1; display: flex; flex-direction: column; padding: 20px; overflow-y: auto; border-right: 1px solid var(--border-color); }
+        .pos-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        
+        .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; }
+        .menu-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 15px; text-align: center; cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; justify-content: center; height: 120px;}
+        .menu-card:hover { border-color: var(--accent-red); transform: translateY(-2px); }
+        .menu-card.disabled { opacity: 0.5; pointer-events: none; }
+        .menu-card h4 { font-size: 14px; margin-bottom: 5px; }
+        .menu-card p { font-size: 12px; color: var(--accent-red); font-weight: bold; }
+        .menu-card small { font-size: 10px; color: var(--text-muted); margin-top: 5px; display: block; }
+
+        /* KANAN: Area Checkout */
+        .pos-cart-area { width: 400px; background: var(--card-bg); display: flex; flex-direction: column; border-left: 2px solid var(--accent-red); }
+        .cart-header { padding: 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+        .cart-items { flex: 1; overflow-y: auto; padding: 20px; }
+        
+        .cart-item { display: flex; justify-content: space-between; margin-bottom: 15px; align-items: center; border-bottom: 1px dashed var(--border-color); padding-bottom: 10px;}
+        .cart-item-info h5 { font-size: 14px; margin-bottom: 2px; }
+        .cart-item-info p { font-size: 12px; color: var(--text-muted); }
+        .qty-controls { display: flex; align-items: center; gap: 10px; }
+        .qty-btn { background: var(--bg-color); color: white; border: 1px solid var(--border-color); width: 25px; height: 25px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        
+        .cart-summary { padding: 20px; border-top: 1px solid var(--border-color); background: var(--bg-color); }
+        .summary-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px; }
+        .summary-total { font-size: 20px; font-weight: 800; color: var(--accent-red); border-top: 1px dashed var(--border-color); padding-top: 10px; margin-top: 10px;}
+        
+        /* Tab Guest / Member */
+        .customer-tabs { display: flex; gap: 5px; background: var(--bg-color); padding: 5px; border-radius: var(--radius-sm); margin-bottom: 15px; }
+        .cust-tab { flex: 1; text-align: center; padding: 8px; font-size: 12px; cursor: pointer; border-radius: 4px; color: var(--text-muted); font-weight: 600; }
+        .cust-tab.active { background: var(--accent-red); color: white; }
+        
+        /* Modal Struk */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 999; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
+        .modal-overlay.active { display: flex; }
+        .modal-box { background: var(--card-bg); border: 2px solid var(--accent-red); border-radius: var(--radius-lg); padding: 20px; width: 100%; max-width: 350px; }
+
+        /* Responsive HP */
+        @media (max-width: 768px) {
+            .pos-layout { flex-direction: column; }
+            .pos-menu-area { flex: 1; border-right: none; border-bottom: 1px solid var(--border-color); }
+            .pos-cart-area { width: 100%; height: 50vh; }
+        }
+    </style>
+</head>
+<body>
+        <!-- Navbar Atas -->
+    <nav class="navbar">
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <button class="hamburger" onclick="toggleSidebar()">☰</button>
+            <div class="navbar-brand">Owner <span>Panel</span></div>
+        </div>
+        <button class="btn btn-secondary" onclick="logout()" style="width:auto; padding: 8px 12px; font-size:12px;">Logout</button>
+    </nav>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+    <!-- Sidebar Drawer -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-profile">
+            <div class="sidebar-avatar" id="sidebarAvatar">O</div>
+            <div>
+                <div class="sidebar-name" id="sidebarName">Owner</div>
+                <div class="sidebar-role">Administrator</div>
+            </div>
+        </div>
+        
+        <ul class="sidebar-menu">
+            <li><a href="dashboard.html" class="nav-link"><span>📊</span> Dashboard</a></li>
+            <li><a href="kasir.html" class="nav-link"><span>🛒</span> Kasir (POS)</a></li>
+            <li><a href="scan.html" class="nav-link"><span>📷</span> Scan QR Member</a></li>
+            <li><a href="menu.html" class="nav-link"><span>☕</span> Antrean Menu</a></li>
+            <li><a href="laporan.html" class="nav-link"><span>📈</span> Laporan Penjualan</a></li>
+            <li><a href="voucher.html" class="nav-link"><span>🎁</span> Klaim Voucher</a></li>
+            <li><a href="bahan.html" class="nav-link"><span>📦</span> Bahan Baku</a></li>
+            <li><a href="resep.html" class="nav-link"><span>📝</span> Resep & HPP</a></li>
+            <li><a href="kelola-menu.html" class="nav-link"><span>⚙️</span> Kelola Master Menu</a></li>
+            <li><a href="program.html" class="nav-link"><span>🏆</span> Program Loyalty</a></li>
+        </ul>
+
+        <div class="sidebar-footer">
+            <a href="#" onclick="logout()" style="color: var(--accent-red); display: flex; gap: 10px; align-items: center; padding: 10px; text-decoration: none;">
+                <span>🚪</span> Logout
+            </a>
+        </div>
+    </div>
+
+    <div class="pos-layout">
+        <!-- KIRI: MENU -->
+        <div class="pos-menu-area">
+            <div class="pos-header">
+                <h2 style="font-size: 20px;">Kasir Offense</h2>
+                <button class="btn btn-secondary" onclick="window.location.href='dashboard.html'" style="width:auto; padding: 5px 15px; font-size:12px;">Tutup Kasir</button>
+            </div>
+            
+            <div class="menu-grid" id="menuGrid">
+                <p class="font-muted">Memuat menu...</p>
+            </div>
+        </div>
+
+        <!-- KANAN: KERANJANG -->
+        <div class="pos-cart-area">
+            <div class="cart-header">
+                <h3 style="font-size: 16px;">Pesanan</h3>
+                <span id="cartCount" style="font-size: 12px; color: var(--text-muted);">0 Item</span>
+            </div>
+
+            <div style="padding: 15px 20px 0;">
+                <div class="customer-tabs">
+                    <div class="cust-tab active" id="tabGuest" onclick="switchCustomerType('guest')">Guest</div>
+                    <div class="cust-tab" id="tabMember" onclick="switchCustomerType('member')">Member</div>
+                </div>
+                
+                <div id="memberSelectSection" style="display:none; margin-bottom: 10px;">
+                    <select id="memberSelect" class="form-control" style="font-size: 13px;" onchange="selectMember()">
+                        <option value="">-- Pilih Member (Check-in) --</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="cart-items" id="cartList">
+                <p class="font-muted text-center" style="font-size: 12px; margin-top: 20px;">Keranjang kosong</p>
+            </div>
+
+            <div class="cart-summary">
+                <div class="summary-row">
+                    <span>Subtotal</span>
+                    <span id="subtotalText">Rp 0</span>
+                </div>
+                <div class="summary-row">
+                    <span>Uang Bayar</span>
+                    <input type="number" id="paymentInput" class="form-control" placeholder="0" style="width: 120px; padding: 5px 10px; text-align: right;" oninput="calculateChange()">
+                </div>
+                <div class="summary-row">
+                    <span>Kembalian</span>
+                    <span id="changeText">Rp 0</span>
+                </div>
+                
+                <div class="summary-total">
+                    <span>Total</span>
+                    <span id="totalText">Rp 0</span>
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-top: 15px;">
+                    <button class="btn btn-secondary" style="flex: 1; padding: 10px;" onclick="clearCart()">Reset</button>
+                    <button class="btn btn-primary" style="flex: 2; padding: 10px;" onclick="processPayment()">Bayar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Struk -->
+    <div class="modal-overlay" id="receiptModal">
+        <div class="modal-box" style="max-width: 300px;">
+            <div id="receiptContent" style="font-family: monospace; font-size: 12px; color: var(--text-main); text-align: left; margin-bottom: 20px;"></div>
+            <button class="btn btn-primary btn-block" onclick="printReceipt()">🖨️ Cetak Struk</button>
+            <button class="btn btn-secondary btn-block" onclick="closeReceipt()" style="margin-top: 10px;">Tutup</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/config/supabase.js"></script>
+    <script src="../js/core/auth.js"></script>
+    <script src="../js/core/ui.js"></script>
+    <script src="../js/pages/owner/kasir.page.js"></script>
+        <script>
+        // Logika Sidebar
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('sidebarOverlay').classList.toggle('active');
+        }
+
+        // Tandai menu yang aktif
+        document.addEventListener('DOMContentLoaded', () => {
+            const currentPage = window.location.pathname.split('/').pop();
+            document.querySelectorAll('.sidebar-menu a').forEach(link => {
+                if (link.getAttribute('href') === currentPage) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

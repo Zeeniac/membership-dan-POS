@@ -1,0 +1,19 @@
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 0.5em;
+}
+
+h1 { font-size: var(--text-xl); }
+h2 { font-size: var(--text-lg); }
+h3 { font-size: var(--text-base); font-weight: 600; }
+
+p {
+  margin-bottom: 1rem;
+  color: var(--text-muted);
+}
+
+.text-center { text-align: center; }
+.text-red { color: var(--accent-red); }
+.font-bold { font-weight: 700; }
+.font-muted { color: var(--text-muted); font-size: var(--text-sm); }

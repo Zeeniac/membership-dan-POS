@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kelola Menu - Offense Coffee</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/main.css">
+    <style>
+        body { padding-bottom: 80px; }
+        .container { padding: 20px; max-width: 480px; margin: 0 auto; }
+        .menu-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid var(--border-color); background: var(--card-bg); border-radius: var(--radius-sm); margin-bottom: 8px;}
+        .btn-delete { background: transparent; color: var(--accent-red); border: 1px solid var(--accent-red); padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; }
+        .btn-delete:hover { background: var(--accent-red); color: white; }
+        
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--card-bg); border-top: 1px solid var(--border-color); display: flex; justify-content: space-around; padding: 10px 0; z-index: 100; }
+        .nav-item { text-align: center; color: var(--text-muted); font-size: 11px; cursor: pointer; text-decoration: none; }
+        .nav-item.active { color: var(--accent-red); font-weight: bold; }
+        .nav-item span { display: block; font-size: 20px; margin-bottom: 4px; }
+    </style>
+</head>
+<body>
+    <!-- Navbar Atas -->
+    <nav class="navbar">
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <button class="hamburger" onclick="toggleSidebar()">☰</button>
+            <div class="navbar-brand">Owner <span>Panel</span></div>
+        </div>
+        <button class="btn btn-secondary" onclick="logout()" style="width:auto; padding: 8px 12px; font-size:12px;">Logout</button>
+    </nav>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+    <!-- Sidebar Drawer -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-profile">
+            <div class="sidebar-avatar" id="sidebarAvatar">O</div>
+            <div>
+                <div class="sidebar-name" id="sidebarName">Owner</div>
+                <div class="sidebar-role">Administrator</div>
+            </div>
+        </div>
+        
+        <ul class="sidebar-menu">
+            <li><a href="dashboard.html" class="nav-link"><span>📊</span> Dashboard</a></li>
+            <li><a href="kasir.html" class="nav-link"><span>🛒</span> Kasir (POS)</a></li>
+            <li><a href="scan.html" class="nav-link"><span>📷</span> Scan QR Member</a></li>
+            <li><a href="menu.html" class="nav-link"><span>☕</span> Antrean Menu</a></li>
+            <li><a href="laporan.html" class="nav-link"><span>📈</span> Laporan Penjualan</a></li>
+            <li><a href="voucher.html" class="nav-link"><span>🎁</span> Klaim Voucher</a></li>
+            <li><a href="bahan.html" class="nav-link"><span>📦</span> Bahan Baku</a></li>
+            <li><a href="resep.html" class="nav-link"><span>📝</span> Resep & HPP</a></li>
+            <li><a href="kelola-menu.html" class="nav-link"><span>⚙️</span> Kelola Master Menu</a></li>
+            <li><a href="program.html" class="nav-link"><span>🏆</span> Program Loyalty</a></li>
+        </ul>
+
+        <div class="sidebar-footer">
+            <a href="#" onclick="logout()" style="color: var(--accent-red); display: flex; gap: 10px; align-items: center; padding: 10px; text-decoration: none;">
+                <span>🚪</span> Logout
+            </a>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Tombol Kembali -->
+        <a href="dashboard.html" style="color: var(--text-muted); font-size: 14px; text-decoration: none; display: inline-block; margin-bottom: 15px;">← Kembali ke Dashboard</a>
+
+        <h2 style="margin-bottom: 20px;">Kelola Menu</h2>
+        
+        <div class="card" style="margin-bottom: 20px;">
+            <h3 style="margin-bottom: 10px; font-size: 16px;">Tambah Menu Baru</h3>
+            <div class="form-group">
+                <input type="text" id="menuName" class="form-control" placeholder="Nama Menu (misal: Latte)">
+            </div>
+            <div class="form-group">
+                <input type="number" id="menuPrice" class="form-control" placeholder="Harga (misal: 25000)">
+            </div>
+            <button class="btn btn-primary btn-block" onclick="addMenu()">Tambah Menu</button>
+        </div>
+
+        <div class="card">
+            <h3 style="margin-bottom: 10px; font-size: 16px;">Daftar Menu</h3>
+            <div id="menuList">Loading...</div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/config/supabase.js"></script>
+    <script src="../js/core/auth.js"></script>
+    <script src="../js/core/ui.js"></script>
+    <script src="../js/pages/owner/kelola-menu.page.js"></script>
+        <script>
+        // Logika Sidebar
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('sidebarOverlay').classList.toggle('active');
+        }
+
+        // Tandai menu yang aktif
+        document.addEventListener('DOMContentLoaded', () => {
+            const currentPage = window.location.pathname.split('/').pop();
+            document.querySelectorAll('.sidebar-menu a').forEach(link => {
+                if (link.getAttribute('href') === currentPage) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

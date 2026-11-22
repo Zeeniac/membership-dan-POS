@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Pelanggan - Offense Coffee</title>
+    <link rel="icon" type="image/png" href="../assets/images/logo-circle.png.png">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/main.css">
+    <style>
+        body { padding-bottom: 80px; }
+        .container { padding: 20px; max-width: 480px; margin: 0 auto; }
+        .user-info { margin-bottom: 20px; }
+        .user-name { font-size: var(--text-xl); font-weight: 700; margin-bottom: 4px; }
+        .join-date { font-size: var(--text-sm); color: var(--text-muted); }
+        
+        /* Modal QR */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); z-index: 999; align-items: center; justify-content: center; padding: 20px;}
+        .modal-overlay.active { display: flex; }
+        .qr-box { background: white; padding: 20px; border-radius: var(--radius-lg); text-align: center; width: 100%; max-width: 320px;}
+        .qr-timer { color: var(--accent-red); font-weight: bold; margin-top: 10px; }
+
+        /* Bottom Nav */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--card-bg); border-top: 1px solid var(--border-color); display: flex; justify-content: space-around; padding: 10px 0; z-index: 100; }
+        .nav-item { text-align: center; color: var(--text-muted); font-size: 12px; cursor: pointer; text-decoration: none; }
+        .nav-item.active { color: var(--accent-red); font-weight: bold; }
+        .nav-item span { display: block; font-size: 20px; margin-bottom: 4px; }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="navbar-brand">Offense <span>Coffee</span></div>
+        <button class="btn btn-secondary" onclick="logout()" style="width:auto; padding: 8px 12px; font-size:12px;">Logout</button>
+    </nav>
+
+    <div class="container">
+        <div class="user-info">
+            <div class="user-name" id="userName">Loading...</div>
+            <div class="join-date" id="joinDate">Bergabung sejak...</div>
+        </div>
+
+        <!-- Kartu Stempel -->
+        <div class="card card-brand" style="margin-bottom: 20px;">
+            <h2 class="card-title" id="programName">Kartu Member</h2>
+            <p class="font-muted" id="programTarget" style="margin-bottom: 20px;">Kumpulkan stempel untuk hadiah!</p>
+            
+            <div class="progress-container">
+                <div class="progress-header">
+                    <span>Progress</span><span id="progressText">0 / 10</span>
+                </div>
+                <div class="progress-track"><div class="progress-fill" id="progressFill" style="width: 0%;"></div></div>
+            </div>
+
+            <div id="milestoneInfo" class="text-center font-muted" style="font-size: 12px; margin-bottom: 15px; color: var(--warning);"></div>
+
+            <div class="stamp-grid" id="stampGrid"></div>
+            
+            <button class="btn btn-primary btn-block" onclick="openQRModal()">Tunjukkan QR Code</button>
+        </div>
+
+    </div>
+
+    <!-- Modal QR Code -->
+    <div class="modal-overlay" id="qrModal">
+        <div class="qr-box">
+            <h3 style="color: #000; margin-bottom: 10px;">Scan untuk Check-in</h3>
+            <div id="qrCanvas" style="display: flex; justify-content: center; min-height: 250px;"></div>
+            <div class="qr-timer" id="qrTimer">Berlaku: 60 detik</div>
+            <button class="btn btn-danger btn-block" onclick="closeQRModal()" style="margin-top: 15px;">Tutup</button>
+        </div>
+    </div>
+
+    <!-- Bottom Nav -->
+    <div class="bottom-nav">
+        <a href="dashboard.html" class="nav-item active"><span>🏠</span>Beranda</a>
+        <a href="voucher.html" class="nav-item"><span>🎟️</span>Voucher</a>
+        <a href="riwayat.html" class="nav-item"><span>🧾</span>Riwayat</a>
+        <a href="leaderboard.html" class="nav-item"><span>🏆</span>Peringkat</a>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="../js/config/supabase.js"></script>
+    <script src="../js/core/auth.js"></script>
+    <script src="../js/pages/customer/dashboard.page.js"></script>
+    <script src="../js/core/ui.js"></script>
+</body>
+</html>

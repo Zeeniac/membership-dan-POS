@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Klaim Voucher - Offense Coffee</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/main.css">
+    <style>
+        body { padding-bottom: 80px; }
+        .container { padding: 20px; max-width: 480px; margin: 0 auto; }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--card-bg); border-top: 1px solid var(--border-color); display: flex; justify-content: space-around; padding: 10px 0; z-index: 100; }
+        .nav-item { text-align: center; color: var(--text-muted); font-size: 12px; cursor: pointer; text-decoration: none; }
+        .nav-item.active { color: var(--accent-red); font-weight: bold; }
+        .nav-item span { display: block; font-size: 20px; margin-bottom: 4px; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-brand">Owner <span>Panel</span></div>
+        <button class="btn btn-secondary" onclick="logout()" style="width:auto; padding: 8px 12px; font-size:12px;">Logout</button>
+    </nav>
+
+    <div class="container">
+        <h2 class="text-center" style="margin-bottom: 20px;">Klaim Voucher</h2>
+        <div class="card card-brand">
+            <p class="font-muted" style="margin-bottom: 15px;">Masukkan kode voucher pelanggan untuk ditukar dengan hadiah.</p>
+            <div class="form-group">
+                <input type="text" id="voucherCode" class="form-control" placeholder="Contoh: OFF-VC-A1B2C3" style="text-transform: uppercase;">
+            </div>
+            <button class="btn btn-primary btn-block" onclick="redeemVoucher()">Klaim Voucher</button>
+        </div>
+    </div>
+
+    <div class="bottom-nav">
+        <a href="dashboard.html" class="nav-item"><span>📊</span>Dashboard</a>
+        <a href="scan.html" class="nav-item"><span>📷</span>Scan</a>
+        <a href="menu.html" class="nav-item"><span>☕</span>Menu</a>
+        <a href="voucher.html" class="nav-item active"><span>🎁</span>Voucher</a>
+        <a href="program.html" class="nav-item"><span>⚙️</span>Program</a>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/config/supabase.js"></script>
+    <script src="../js/core/auth.js"></script>
+    <script src="../js/pages/owner/voucher.page.js"></script>
+    <script src="../js/core/ui.js"></script>
+</body>
+</html>

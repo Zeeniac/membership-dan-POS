@@ -1,0 +1,29 @@
+:root {
+  --bg-color: #0d0d0d;
+  --card-bg: #1a1a1a;
+  --accent-red: #e50914;
+  --accent-dark-red: #b20710;
+  --text-main: #ffffff;
+  --text-muted: #b3b3b3;
+  --border-color: #333333;
+  
+  --success: #4caf50;
+  --warning: #ff9800;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-full: 9999px;
+
+  --text-sm: 0.875rem; /* 14px */
+  --text-base: 1rem;   /* 16px */
+  --text-lg: 1.25rem;  /* 20px */
+  --text-xl: 1.5rem;   /* 24px */
+}
+
+@media (min-width: 768px) {
+  :root {
+    --text-base: 1.125rem;
+    --text-xl: 2rem;
+  }
+}
