@@ -62,7 +62,6 @@ function switchCustomerType(type) {
     document.getElementById('tabGuest').classList.toggle('active', type === 'guest');
     document.getElementById('tabMember').classList.toggle('active', type === 'member');
     document.getElementById('memberSelectSection').style.display = type === 'member' ? 'block' : 'none';
-    
     clearCart(); 
 }
 
@@ -164,7 +163,6 @@ async function processPayment() {
     }
 
     try {
-        // 1. Simpan Transaksi
         const { data: trx, error: trxErr } = await supabaseClient.from('transactions').insert({
             total_price: totalPrice,
             customer_type: selectedCustomerType,
@@ -173,7 +171,6 @@ async function processPayment() {
 
         if (trxErr) throw trxErr;
 
-        // 2. Simpan Item Transaksi
         const items = cart.map(item => ({
             transaction_id: trx.id,
             menu_id: item.id,
@@ -183,33 +180,19 @@ async function processPayment() {
         }));
         await supabaseClient.from('transaction_items').insert(items);
 
-        // 3. Potong Stok Bahan Baku & Riwayat Member
         for (let item of cart) {
-            // A. Cari resep dari menu ini
-            const { data: resep } = await supabaseClient
-                .from('resep_menu')
-                .select('bahan_id, takaran')
-                .eq('menu_id', item.id);
+            const { data: resep } = await supabaseClient.from('resep_menu').select('bahan_id, takaran').eq('menu_id', item.id);
 
             if (resep && resep.length > 0) {
                 for (let r of resep) {
-                    const totalPotong = r.takaran * item.qty;
-                    // Panggil RPC buat potong stok bahan
-                    await supabaseClient.rpc('decrease_bahan_stock', { 
-                        p_bahan_id: r.bahan_id, 
-                        p_qty: totalPotong 
-                    });
+                    await supabaseClient.rpc('decrease_bahan_stock', { p_bahan_id: r.bahan_id, p_qty: r.takaran * item.qty });
                 }
             } else {
-                // Fallback: Kalau nggak ada resep, potong stok menu langsung (kayak sebelumnya)
                 await supabaseClient.rpc('decrease_stock', { p_menu_id: item.id, p_qty: item.qty });
             }
             
-            // B. Masukin ke riwayat pesanan member
             if (selectedCustomerType === 'member') {
-                const { data: checkin } = await supabaseClient.from('checkins')
-                    .select('id').eq('user_id', selectedMemberId).order('created_at', { ascending: false }).limit(1).single();
-                
+                const { data: checkin } = await supabaseClient.from('checkins').select('id').eq('user_id', selectedMemberId).order('created_at', { ascending: false }).limit(1).single();
                 if (checkin) {
                     await supabaseClient.from('order_history').insert({
                         user_id: selectedMemberId,
@@ -221,12 +204,9 @@ async function processPayment() {
             }
         }
 
-        // 4. Tampilkan Struk
         showReceipt(trx.id, totalPrice, paid);
-        
-        // 5. Reset
         clearCart();
-        await loadMenus(); // Reload stok terbaru
+        await loadMenus(); 
 
     } catch (error) {
         showPopup('Gagal', 'Transaksi gagal: ' + error.message, 'error');
@@ -235,52 +215,39 @@ async function processPayment() {
 
 function showReceipt(trxId, total, paid) {
     const change = paid - total;
-    
-    // Format tanggal dan waktu
     const now = new Date();
     const dateStr = now.toLocaleDateString('id-ID', { year: 'numeric', month: '2-digit', day: '2-digit' }).split('/').reverse().join('-');
     const timeStr = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }).replace('.', ':');
 
-    // Mulai susun HTML
+    // --- STRUKTUR BARU (PERSIS JOFIE) ---
     let strukHTML = `
         <div class="struk-wrapper">
-            <!-- HEADER (Logo & Info Toko) -->
             <div class="struk-header">
-                <div class="struk-logo">
-                    <!-- Ganti src dengan path logo asli kamu -->
-                    <img src="../../../assets/images/logo-wide.png.png" alt="Logo">
-                </div>
-                <h3>OFFENSE COFFEE</h3>
-                <p>JL. NIBUNG<br>MEDAN</p>
+                <img src="../../../assets/images/logo-wide.png.png" alt="Logo">
+                <h3>Offense Coffee</h3>
+                <p>Jl. Nibung<br>Medan</p>
                 <p>IG @OFFENSECOFFEE</p>
             </div>
 
-            <div class="struk-divider-dashed"></div>
+            <div class="struk-divider"></div>
 
-            <!-- INFO TRANSAKSI -->
             <div class="struk-info">
-                <div class="info-row">
-                    <span>${dateStr}<br>${timeStr}</span>
-                    <span class="text-right">${selectedCustomerType === 'member' ? 'member' : 'guest'}<br>Sheila</span>
-                </div>
-                <div class="info-row mt-2">
-                    <span>No.0-3</span>
-                </div>
+                <div class="row"><span>Pesanan: 0-${String(Math.floor(Math.random()*100)).padStart(2,'0')}</span><span>Kasir: Owner</span></div>
+                <div class="row"><span>POS: POS 1</span><span>${selectedCustomerType === 'member' ? 'Member' : 'Guest'}</span></div>
             </div>
 
-            <div class="struk-divider-dashed"></div>
+            <div class="struk-divider"></div>
 
-            <!-- LIST ITEM BELANJA -->
             <div class="struk-items">
     `;
 
-    cart.forEach((item, index) => {
+    cart.forEach((item) => {
         strukHTML += `
             <div class="item-block">
-                <div class="item-title">${index + 1}. ${item.name}</div>
+                <div class="item-title">${item.name.toUpperCase()}</div>
                 <div class="item-detail">
                     <span>${item.qty} x ${item.price.toLocaleString('id-ID')}</span>
-                    <span>Rp ${(item.price * item.qty).toLocaleString('id-ID')}</span>
+                    <span>${(item.price * item.qty).toLocaleString('id-ID')}</span>
                 </div>
             </div>
         `;
@@ -289,41 +256,27 @@ function showReceipt(trxId, total, paid) {
     strukHTML += `
             </div>
 
-            <div class="struk-divider-dashed"></div>
+            <div class="struk-divider"></div>
 
-            <!-- TOTAL & PEMBAYARAN -->
             <div class="struk-totals">
-                <div class="total-row">
-                    <span>Total QTY : ${cart.reduce((sum, item) => sum + item.qty, 0)}</span>
+                <div class="total-row bold" style="font-size: 16px;">
+                    <span>TOTAL</span>
+                    <span>${total.toLocaleString('id-ID')}</span>
                 </div>
-                <div class="total-row">
-                    <span>Sub Total</span>
-                    <span>Rp ${total.toLocaleString('id-ID')}</span>
-                </div>
-                <div class="total-row font-bold">
-                    <span>Total</span>
-                    <span>Rp ${total.toLocaleString('id-ID')}</span>
-                </div>
-                <div class="total-row mt-1">
-                    <span>Bayar (Cash)</span>
-                    <span>Rp ${paid.toLocaleString('id-ID')}</span>
-                </div>
-                <div class="total-row">
-                    <span>Kembali</span>
-                    <span>Rp ${change.toLocaleString('id-ID')}</span>
-                </div>
+                <div class="total-row"><span>Bayar (Tunai)</span><span>${paid.toLocaleString('id-ID')}</span></div>
+                <div class="total-row"><span>Kembalian</span><span>${change.toLocaleString('id-ID')}</span></div>
+                <div class="total-row" style="margin-top: 10px;"><span>Banyak Item: ${cart.reduce((sum, item) => sum + item.qty, 0)}</span></div>
             </div>
 
-            <!-- FOOTER -->
+            <div class="struk-divider"></div>
+
             <div class="struk-footer">
-                <p>Terimakasih Telah Berbelanja</p>
-                <p>Link Kritik dan Saran:<br>
-                <span class="link-box">com/e-receipt/S-00D39U-07G344G</span></p>
+                <p>Terima kasih atas pembelian Anda!</p>
+                <p style="margin-top: 15px;">${dateStr} ${timeStr} &nbsp; #9-1008</p>
             </div>
         </div>
     `;
 
-    // Masukkan ke dalam modal
     document.getElementById('receiptContent').innerHTML = strukHTML;
     document.getElementById('receiptModal').classList.add('active');
 }
@@ -332,20 +285,53 @@ function closeReceipt() {
     document.getElementById('receiptModal').classList.remove('active');
 }
 
+// FUNGSI PRINT BARU (TIDAK MERUSAK HALAMAN)
 function printReceipt() {
     const printContent = document.getElementById('receiptContent').innerHTML;
-    const originalContent = document.body.innerHTML;
-
-    // Ganti isi body dengan struk aja buat di-print
-    document.body.innerHTML = `
-        <div style="font-family: monospace; width: 100%; padding: 20px; text-align: center;">
+    
+    // Buka tab baru untuk print
+    const printWindow = window.open('', '_blank', 'width=400,height=600');
+    
+    // Tulis HTML persis seperti struk JOFIE
+    printWindow.document.write(`
+        <html>
+        <head>
+            <title>Cetak Struk</title>
+            <style>
+                /* Paksa font Arial dan hitam pekat */
+                body { 
+                    font-family: Arial, Helvetica, sans-serif; 
+                    font-size: 11px; 
+                    color: #000; 
+                    width: 58mm; 
+                    margin: 0 auto; 
+                    padding: 5px; 
+                    font-weight: bold;
+                }
+                .struk-wrapper { width: 100%; }
+                .struk-header { text-align: center; }
+                .struk-header img { width: 60px; filter: grayscale(100%) contrast(300%); margin-bottom: 5px; }
+                .struk-header h3 { font-size: 14px; margin: 5px 0; font-weight: 900; }
+                .struk-header p { margin: 2px 0; font-size: 11px; }
+                .struk-divider { border-top: 1px dashed #000; margin: 8px 0; }
+                .row, .item-detail, .total-row { display: flex; justify-content: space-between; margin-bottom: 2px; }
+                .item-title { font-weight: 900; margin-top: 5px; font-size: 12px; }
+                .item-detail { padding-left: 0; }
+                .total-row.bold { font-weight: 900; font-size: 13px; }
+                .struk-footer { text-align: center; margin-top: 10px; font-size: 10px; }
+            </style>
+        </head>
+        <body>
             ${printContent}
-        </div>
-    `;
-
-    window.print();
-
-    // Balikin tampilan semula setelah print
-    document.body.innerHTML = originalContent;
-    window.location.reload(); 
+        </body>
+        </html>
+    `);
+    
+    printWindow.document.close();
+    printWindow.focus();
+    
+    setTimeout(() => {
+        printWindow.print();
+        printWindow.close(); // Otomatis tutup tab setelah print
+    }, 500);
 }

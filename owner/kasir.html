@@ -4,19 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kasir POS - Offense Coffee</title>
+    
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../css/main.css">
     <link rel="stylesheet" href="../css/components/struk.css">
+    
     <style>
         body { background: var(--bg-color); height: 100vh; overflow: hidden; margin: 0; padding: 0; }
-        
-        /* Layout 2 Kolom */
         .pos-layout { display: flex; height: 100vh; width: 100vw; }
-        
-        /* KIRI: Area Menu */
         .pos-menu-area { flex: 1; display: flex; flex-direction: column; padding: 20px; overflow-y: auto; border-right: 1px solid var(--border-color); }
         .pos-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        
         .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; }
         .menu-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 15px; text-align: center; cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; justify-content: center; height: 120px;}
         .menu-card:hover { border-color: var(--accent-red); transform: translateY(-2px); }
@@ -24,57 +21,46 @@
         .menu-card h4 { font-size: 14px; margin-bottom: 5px; }
         .menu-card p { font-size: 12px; color: var(--accent-red); font-weight: bold; }
         .menu-card small { font-size: 10px; color: var(--text-muted); margin-top: 5px; display: block; }
-
-        /* KANAN: Area Checkout */
+        
         .pos-cart-area { width: 400px; background: var(--card-bg); display: flex; flex-direction: column; border-left: 2px solid var(--accent-red); }
         .cart-header { padding: 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
         .cart-items { flex: 1; overflow-y: auto; padding: 20px; }
-        
         .cart-item { display: flex; justify-content: space-between; margin-bottom: 15px; align-items: center; border-bottom: 1px dashed var(--border-color); padding-bottom: 10px;}
         .cart-item-info h5 { font-size: 14px; margin-bottom: 2px; }
         .cart-item-info p { font-size: 12px; color: var(--text-muted); }
         .qty-controls { display: flex; align-items: center; gap: 10px; }
         .qty-btn { background: var(--bg-color); color: white; border: 1px solid var(--border-color); width: 25px; height: 25px; border-radius: 4px; cursor: pointer; font-weight: bold; }
-        
         .cart-summary { padding: 20px; border-top: 1px solid var(--border-color); background: var(--bg-color); }
         .summary-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px; }
         .summary-total { font-size: 20px; font-weight: 800; color: var(--accent-red); border-top: 1px dashed var(--border-color); padding-top: 10px; margin-top: 10px;}
-        
-        /* Tab Guest / Member */
         .customer-tabs { display: flex; gap: 5px; background: var(--bg-color); padding: 5px; border-radius: var(--radius-sm); margin-bottom: 15px; }
         .cust-tab { flex: 1; text-align: center; padding: 8px; font-size: 12px; cursor: pointer; border-radius: 4px; color: var(--text-muted); font-weight: 600; }
         .cust-tab.active { background: var(--accent-red); color: white; }
         
-        /* Modal Struk */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 999; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
         .modal-overlay.active { display: flex; }
-        .modal-box { background: var(--card-bg); border: 2px solid var(--accent-red); border-radius: var(--radius-lg); padding: 20px; width: 100%; max-width: 350px; }
+        .modal-box { background: #fff; border: 1px solid #ccc; border-radius: 8px; padding: 20px; width: 100%; max-width: 320px; max-height: 90vh; overflow-y: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
 
-        /* Responsive HP */
         @media (max-width: 768px) {
             .pos-layout { flex-direction: column; }
             .pos-menu-area { flex: 1; border-right: none; border-bottom: 1px solid var(--border-color); }
             .pos-cart-area { width: 100%; height: 50vh; }
         }
-        
     </style>
 </head>
 <body>
 
     <div class="pos-layout">
-        <!-- KIRI: MENU -->
         <div class="pos-menu-area">
             <div class="pos-header">
                 <h2 style="font-size: 20px;">Kasir Offense</h2>
                 <button class="btn btn-secondary" onclick="window.location.href='dashboard.html'" style="width:auto; padding: 5px 15px; font-size:12px;">Tutup Kasir</button>
             </div>
-            
             <div class="menu-grid" id="menuGrid">
                 <p class="font-muted">Memuat menu...</p>
             </div>
         </div>
 
-        <!-- KANAN: KERANJANG -->
         <div class="pos-cart-area">
             <div class="cart-header">
                 <h3 style="font-size: 16px;">Pesanan</h3>
@@ -86,7 +72,6 @@
                     <div class="cust-tab active" id="tabGuest" onclick="switchCustomerType('guest')">Guest</div>
                     <div class="cust-tab" id="tabMember" onclick="switchCustomerType('member')">Member</div>
                 </div>
-                
                 <div id="memberSelectSection" style="display:none; margin-bottom: 10px;">
                     <select id="memberSelect" class="form-control" style="font-size: 13px;" onchange="selectMember()">
                         <option value="">-- Pilih Member (Check-in) --</option>
@@ -111,12 +96,10 @@
                     <span>Kembalian</span>
                     <span id="changeText">Rp 0</span>
                 </div>
-                
                 <div class="summary-total">
                     <span>Total</span>
                     <span id="totalText">Rp 0</span>
                 </div>
-
                 <div style="display: flex; gap: 10px; margin-top: 15px;">
                     <button class="btn btn-secondary" style="flex: 1; padding: 10px;" onclick="clearCart()">Reset</button>
                     <button class="btn btn-primary" style="flex: 2; padding: 10px;" onclick="processPayment()">Bayar</button>
@@ -127,10 +110,14 @@
 
     <!-- Modal Struk -->
     <div class="modal-overlay" id="receiptModal">
-        <div class="modal-box" style="max-width: 300px;">
-            <div id="receiptContent" style="font-family: monospace; font-size: 12px; color: var(--text-main); text-align: left; margin-bottom: 20px;"></div>
-            <button class="btn btn-primary btn-block" onclick="printReceipt()">🖨️ Cetak Struk</button>
-            <button class="btn btn-secondary btn-block" onclick="closeReceipt()" style="margin-top: 10px;">Tutup</button>
+        <div class="modal-box" style="max-width: 340px;">
+            <div id="receiptContent"></div>
+            
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <!-- Tombol Tutup dipaksa hitam -->
+                <button class="btn" style="flex:1; background-color: #000 !important; color: #fff !important; border: none; padding: 10px; border-radius: 4px; cursor: pointer;" onclick="closeReceipt()">Tutup</button>
+                <button class="btn btn-primary" style="flex:2; padding: 10px; border-radius: 4px; cursor: pointer; background-color: #e11d48; color: white; border: none;" onclick="printReceipt()">🖨️ Cetak Struk</button>
+            </div>
         </div>
     </div>
     
