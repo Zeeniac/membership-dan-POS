@@ -235,24 +235,96 @@ async function processPayment() {
 
 function showReceipt(trxId, total, paid) {
     const change = paid - total;
-    let strukText = `================================\n       OFFENSE COFFEE       \n================================\n`;
-    strukText += `ID: ${trxId.split('-')[0].toUpperCase()}\n`;
-    strukText += `Tanggal: ${new Date().toLocaleString('id-ID')}\n`;
-    strukText += `Tipe: ${selectedCustomerType === 'member' ? 'MEMBER' : 'GUEST'}\n`;
-    strukText += `--------------------------------\n`;
     
-    cart.forEach(item => {
-        strukText += `${item.qty}x ${item.name.padEnd(10)} Rp ${(item.price * item.qty).toLocaleString('id-ID')}\n`;
-    });
-    
-    strukText += `--------------------------------\n`;
-    strukText += `TOTAL       : Rp ${total.toLocaleString('id-ID')}\n`;
-    strukText += `BAYAR       : Rp ${paid.toLocaleString('id-ID')}\n`;
-    strukText += `KEMBALI     : Rp ${change.toLocaleString('id-ID')}\n`;
-    strukText += `================================\n`;
-    strukText += `   Terima Kasih, Selamat Ngopi!  \n`;
+    // Format tanggal dan waktu
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('id-ID', { year: 'numeric', month: '2-digit', day: '2-digit' }).split('/').reverse().join('-');
+    const timeStr = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }).replace('.', ':');
 
-    document.getElementById('receiptContent').innerHTML = `<pre>${strukText}</pre>`;
+    // Mulai susun HTML
+    let strukHTML = `
+        <div class="struk-wrapper">
+            <!-- HEADER (Logo & Info Toko) -->
+            <div class="struk-header">
+                <div class="struk-logo">
+                    <!-- Ganti src dengan path logo asli kamu -->
+                    <img src="https://via.placeholder.com/60x60?text=Logo" alt="Logo">
+                </div>
+                <h3>Karis Jaya Shop</h3>
+                <p>Jl. Dr. Ir. H. Soekarno No.19, Medokan Semampir<br>Surabaya</p>
+                <p>No. Telp 0812345678<br>16413520230802084636</p>
+            </div>
+
+            <div class="struk-divider-dashed"></div>
+
+            <!-- INFO TRANSAKSI -->
+            <div class="struk-info">
+                <div class="info-row">
+                    <span>${dateStr}<br>${timeStr}</span>
+                    <span class="text-right">${selectedCustomerType === 'member' ? 'member' : 'guest'}<br>Sheila</span>
+                </div>
+                <div class="info-row mt-2">
+                    <span>No.0-3</span>
+                </div>
+            </div>
+
+            <div class="struk-divider-dashed"></div>
+
+            <!-- LIST ITEM BELANJA -->
+            <div class="struk-items">
+    `;
+
+    cart.forEach((item, index) => {
+        strukHTML += `
+            <div class="item-block">
+                <div class="item-title">${index + 1}. ${item.name}</div>
+                <div class="item-detail">
+                    <span>${item.qty} x ${item.price.toLocaleString('id-ID')}</span>
+                    <span>Rp ${(item.price * item.qty).toLocaleString('id-ID')}</span>
+                </div>
+            </div>
+        `;
+    });
+
+    strukHTML += `
+            </div>
+
+            <div class="struk-divider-dashed"></div>
+
+            <!-- TOTAL & PEMBAYARAN -->
+            <div class="struk-totals">
+                <div class="total-row">
+                    <span>Total QTY : ${cart.reduce((sum, item) => sum + item.qty, 0)}</span>
+                </div>
+                <div class="total-row">
+                    <span>Sub Total</span>
+                    <span>Rp ${total.toLocaleString('id-ID')}</span>
+                </div>
+                <div class="total-row font-bold">
+                    <span>Total</span>
+                    <span>Rp ${total.toLocaleString('id-ID')}</span>
+                </div>
+                <div class="total-row mt-1">
+                    <span>Bayar (Cash)</span>
+                    <span>Rp ${paid.toLocaleString('id-ID')}</span>
+                </div>
+                <div class="total-row">
+                    <span>Kembali</span>
+                    <span>Rp ${change.toLocaleString('id-ID')}</span>
+                </div>
+            </div>
+
+            <!-- FOOTER -->
+            <div class="struk-footer">
+                <p>Terimakasih Telah Berbelanja</p>
+                <p>Link Kritik dan Saran:<br>
+                <span class="link-box">com/e-receipt/S-00D39U-07G344G</span></p>
+            </div>
+        </div>
+    `;
+
+    // Masukkan ke dalam modal
+    document.getElementById('receiptContent').innerHTML = strukHTML;
     document.getElementById('receiptModal').classList.add('active');
 }
 
