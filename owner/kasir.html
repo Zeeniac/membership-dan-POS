@@ -7,11 +7,17 @@
     
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../css/main.css">
-    <link rel="stylesheet" href="../css/components/struk.css">
     
     <style>
+        /* =======================================================
+           SECTION 1: LAYOUT UTAMA POS
+           ======================================================= */
         body { background: var(--bg-color); height: 100vh; overflow: hidden; margin: 0; padding: 0; }
         .pos-layout { display: flex; height: 100vh; width: 100vw; }
+        
+        /* =======================================================
+           SECTION 2: AREA KIRI (MENU)
+           ======================================================= */
         .pos-menu-area { flex: 1; display: flex; flex-direction: column; padding: 20px; overflow-y: auto; border-right: 1px solid var(--border-color); }
         .pos-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; }
@@ -21,7 +27,10 @@
         .menu-card h4 { font-size: 14px; margin-bottom: 5px; }
         .menu-card p { font-size: 12px; color: var(--accent-red); font-weight: bold; }
         .menu-card small { font-size: 10px; color: var(--text-muted); margin-top: 5px; display: block; }
-        
+
+        /* =======================================================
+           SECTION 3: AREA KANAN (KERANJANG)
+           ======================================================= */
         .pos-cart-area { width: 400px; background: var(--card-bg); display: flex; flex-direction: column; border-left: 2px solid var(--accent-red); }
         .cart-header { padding: 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
         .cart-items { flex: 1; overflow-y: auto; padding: 20px; }
@@ -37,10 +46,58 @@
         .cust-tab { flex: 1; text-align: center; padding: 8px; font-size: 12px; cursor: pointer; border-radius: 4px; color: var(--text-muted); font-weight: 600; }
         .cust-tab.active { background: var(--accent-red); color: white; }
         
+        /* =======================================================
+           SECTION 4: MODAL STRUK (Di Layar)
+           ======================================================= */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 999; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
         .modal-overlay.active { display: flex; }
-        .modal-box { background: #fff; border: 1px solid #ccc; border-radius: 8px; padding: 20px; width: 100%; max-width: 320px; max-height: 90vh; overflow-y: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        .modal-box { background: #fff; border-radius: 8px; padding: 20px; width: 100%; max-width: 340px; max-height: 90vh; overflow-y: auto; }
 
+        /* =======================================================
+           SECTION 5: STYLING STRUK (Preview di Layar)
+           ======================================================= */
+        .struk-wrapper {
+            font-family: Arial, Helvetica, sans-serif;
+            color: #000;
+            background: #fff;
+            width: 100%;
+            max-width: 58mm;
+            margin: 0 auto;
+            padding: 5px;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+        .struk-header { text-align: center; margin-bottom: 15px; }
+        .struk-header img { width: 180px; display: block; margin: -15px auto -10px auto; filter: grayscale(100%) contrast(200%) brightness(80%); }
+        .struk-header h3 { font-size: 16px; margin: 5px 0; font-weight: bold; }
+        .struk-header p { margin: 2px 0; font-size: 12px; font-weight: bold; }
+        
+        .struk-divider { border-top: 1px dashed #000; margin: 10px 0; }
+        
+        .struk-info .row { display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 11px; font-weight: bold; }
+        
+        .guest-name-row {
+            text-align: center;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-transform: capitalize;
+        }
+
+        .struk-items { margin: 10px 0; }
+        .item-block { margin-bottom: 10px; }
+        .item-title { font-weight: bold; font-size: 13px; text-transform: uppercase; margin-bottom: 3px; }
+        .item-detail { display: flex; justify-content: space-between; font-size: 12px; font-weight: bold; }
+        
+        .struk-totals { margin: 10px 0; }
+        .total-row { display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 12px; font-weight: bold; }
+        .total-row.bold { font-size: 15px; margin-top: 8px; margin-bottom: 8px; }
+        
+        .struk-footer { text-align: center; margin-top: 15px; font-size: 11px; font-weight: bold;}
+
+        /* =======================================================
+           SECTION 6: RESPONSIVE
+           ======================================================= */
         @media (max-width: 768px) {
             .pos-layout { flex-direction: column; }
             .pos-menu-area { flex: 1; border-right: none; border-bottom: 1px solid var(--border-color); }
@@ -66,7 +123,6 @@
                 <h3 style="font-size: 16px;">Pesanan</h3>
                 <span id="cartCount" style="font-size: 12px; color: var(--text-muted);">0 Item</span>
             </div>
-
             <div style="padding: 15px 20px 0;">
                 <div class="customer-tabs">
                     <div class="cust-tab active" id="tabGuest" onclick="switchCustomerType('guest')">Guest</div>
@@ -77,12 +133,14 @@
                         <option value="">-- Pilih Member (Check-in) --</option>
                     </select>
                 </div>
+                <!-- TAMBAHAN: Input Nama Guest -->
+                <div id="guestNameSection" style="margin-bottom: 10px;">
+                    <input type="text" id="guestName" class="form-control" placeholder="Nama Pengunjung (Opsional)" style="font-size: 13px;">
+                </div>
             </div>
-
             <div class="cart-items" id="cartList">
                 <p class="font-muted text-center" style="font-size: 12px; margin-top: 20px;">Keranjang kosong</p>
             </div>
-
             <div class="cart-summary">
                 <div class="summary-row">
                     <span>Subtotal</span>
@@ -110,13 +168,11 @@
 
     <!-- Modal Struk -->
     <div class="modal-overlay" id="receiptModal">
-        <div class="modal-box" style="max-width: 340px;">
+        <div class="modal-box">
             <div id="receiptContent"></div>
-            
             <div style="display: flex; gap: 10px; margin-top: 20px;">
-                <!-- Tombol Tutup dipaksa hitam -->
-                <button class="btn" style="flex:1; background-color: #000 !important; color: #fff !important; border: none; padding: 10px; border-radius: 4px; cursor: pointer;" onclick="closeReceipt()">Tutup</button>
-                <button class="btn btn-primary" style="flex:2; padding: 10px; border-radius: 4px; cursor: pointer; background-color: #e11d48; color: white; border: none;" onclick="printReceipt()">🖨️ Cetak Struk</button>
+                <button class="btn" style="flex:1; background-color: #000 !important; color: #fff !important;" onclick="closeReceipt()">Tutup</button>
+                <button class="btn btn-primary" style="flex:2; background-color: #e11d48 !important;" onclick="printReceipt()">🖨️ Cetak Struk</button>
             </div>
         </div>
     </div>
