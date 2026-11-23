@@ -44,10 +44,120 @@
         .cust-tab { flex: 1; text-align: center; padding: 8px; font-size: 12px; cursor: pointer; border-radius: 4px; color: var(--text-muted); font-weight: 600; }
         .cust-tab.active { background: var(--accent-red); color: white; }
         
-        /* Modal Struk */
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 999; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
-        .modal-overlay.active { display: flex; }
-        .modal-box { background: var(--card-bg); border: 2px solid var(--accent-red); border-radius: var(--radius-lg); padding: 20px; width: 100%; max-width: 350px; }
+/* Container Utama Struk */
+.struk-wrapper {
+    font-family: 'Courier New', Courier, monospace; /* Font khas struk */
+    color: #000;
+    background: #fff;
+    max-width: 320px; /* Lebar standar kertas thermal */
+    margin: 0 auto;
+    padding: 15px;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+/* Header & Logo */
+.struk-header {
+    text-align: center;
+    margin-bottom: 10px;
+}
+.struk-logo img {
+    width: 60px;
+    height: auto;
+    margin-bottom: 5px;
+}
+.struk-header h3 {
+    margin: 5px 0;
+    font-size: 18px;
+    font-weight: bold;
+}
+.struk-header p {
+    margin: 2px 0;
+    font-size: 12px;
+}
+
+/* Garis Putus-putus */
+.struk-divider-dashed {
+    border-top: 1px dashed #000;
+    margin: 10px 0;
+}
+
+/* Info Transaksi */
+.struk-info {
+    font-size: 12px;
+}
+.info-row {
+    display: flex;
+    justify-content: space-between;
+}
+.text-right {
+    text-align: right;
+}
+.mt-2 { margin-top: 10px; }
+.mt-1 { margin-top: 5px; }
+
+/* List Item Belanja */
+.struk-items {
+    margin-bottom: 5px;
+}
+.item-block {
+    margin-bottom: 8px;
+}
+.item-title {
+    font-weight: bold;
+}
+.item-detail {
+    display: flex;
+    justify-content: space-between;
+    padding-left: 10px;
+}
+
+/* Total & Pembayaran */
+.struk-totals {
+    font-size: 13px;
+}
+.total-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 3px;
+}
+.font-bold {
+    font-weight: bold;
+    font-size: 14px;
+}
+
+/* Footer */
+.struk-footer {
+    text-align: center;
+    font-size: 12px;
+    margin-top: 15px;
+}
+.link-box {
+    background-color: #d3d3d3; /* Warna abu-abu untuk link */
+    padding: 2px 5px;
+    display: inline-block;
+    margin-top: 3px;
+}
+
+/* --- PENGATURAN SAAT DI PRINT --- */
+@media print {
+    body * {
+        visibility: hidden;
+    }
+    #receiptModal, .struk-wrapper, .struk-wrapper * {
+        visibility: visible;
+    }
+    #receiptModal {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+    }
+    @page {
+        size: 80mm auto; /* Ukuran kertas thermal */
+        margin: 0;
+    }
+}
 
         /* Responsive HP */
         @media (max-width: 768px) {
@@ -131,7 +241,7 @@
             <button class="btn btn-secondary btn-block" onclick="closeReceipt()" style="margin-top: 10px;">Tutup</button>
         </div>
     </div>
-    
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../js/config/supabase.js"></script>
     <script src="../js/core/auth.js"></script>

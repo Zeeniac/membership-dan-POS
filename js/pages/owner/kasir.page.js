@@ -248,11 +248,11 @@ function showReceipt(trxId, total, paid) {
             <div class="struk-header">
                 <div class="struk-logo">
                     <!-- Ganti src dengan path logo asli kamu -->
-                    <img src="https://via.placeholder.com/60x60?text=Logo" alt="Logo">
+                    <img src="../../../assets/images/logo-wide.png.png" alt="Logo">
                 </div>
-                <h3>Karis Jaya Shop</h3>
-                <p>Jl. Dr. Ir. H. Soekarno No.19, Medokan Semampir<br>Surabaya</p>
-                <p>No. Telp 0812345678<br>16413520230802084636</p>
+                <h3>OFFENSE COFFEE</h3>
+                <p>JL. NIBUNG<br>MEDAN</p>
+                <p>IG @OFFENSECOFFEE</p>
             </div>
 
             <div class="struk-divider-dashed"></div>
