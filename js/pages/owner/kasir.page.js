@@ -183,10 +183,29 @@ async function processPayment() {
         }));
         await supabaseClient.from('transaction_items').insert(items);
 
-        // 3. Potong Stok & Riwayat Member
+        // 3. Potong Stok Bahan Baku & Riwayat Member
         for (let item of cart) {
-            await supabaseClient.rpc('decrease_stock', { p_menu_id: item.id, p_qty: item.qty });
+            // A. Cari resep dari menu ini
+            const { data: resep } = await supabaseClient
+                .from('resep_menu')
+                .select('bahan_id, takaran')
+                .eq('menu_id', item.id);
+
+            if (resep && resep.length > 0) {
+                for (let r of resep) {
+                    const totalPotong = r.takaran * item.qty;
+                    // Panggil RPC buat potong stok bahan
+                    await supabaseClient.rpc('decrease_bahan_stock', { 
+                        p_bahan_id: r.bahan_id, 
+                        p_qty: totalPotong 
+                    });
+                }
+            } else {
+                // Fallback: Kalau nggak ada resep, potong stok menu langsung (kayak sebelumnya)
+                await supabaseClient.rpc('decrease_stock', { p_menu_id: item.id, p_qty: item.qty });
+            }
             
+            // B. Masukin ke riwayat pesanan member
             if (selectedCustomerType === 'member') {
                 const { data: checkin } = await supabaseClient.from('checkins')
                     .select('id').eq('user_id', selectedMemberId).order('created_at', { ascending: false }).limit(1).single();
@@ -239,4 +258,22 @@ function showReceipt(trxId, total, paid) {
 
 function closeReceipt() {
     document.getElementById('receiptModal').classList.remove('active');
+}
+
+function printReceipt() {
+    const printContent = document.getElementById('receiptContent').innerHTML;
+    const originalContent = document.body.innerHTML;
+
+    // Ganti isi body dengan struk aja buat di-print
+    document.body.innerHTML = `
+        <div style="font-family: monospace; width: 100%; padding: 20px; text-align: center;">
+            ${printContent}
+        </div>
+    `;
+
+    window.print();
+
+    // Balikin tampilan semula setelah print
+    document.body.innerHTML = originalContent;
+    window.location.reload(); 
 }
